@@ -30,7 +30,6 @@ function loadDir(directory) {
   * @param {...}
   */
 function render(templateName, context) {
-  var templatePath = path.join(__dirname, '/templates/' + templateName + '.html');
   return templates[templateName].replace(/<%=(.+)%>/g, function(match, js) {
     return eval("var context = " + JSON.stringify(context) + ";" + js);
   });
