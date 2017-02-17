@@ -11,6 +11,7 @@ var template = require('./template');
 var http = require('http');
 var url = require('url');
 var fs = require('fs');
+var path = require('path');
 var port = 3000;
 
 /* load cached files */
@@ -42,7 +43,8 @@ function getImageNames(callback) {
  */
 function imageNamesToTags(fileNames) {
   return fileNames.map(function(fileName) {
-    return `<img src="${fileName}" alt="${fileName}">`;
+    var href = fileName.slice(0, -4) + '.html';
+    return `<a href="${href}"><img src="${fileName}" alt="${fileName}"></a>`;
   });
 }
 
@@ -101,13 +103,88 @@ function serveImage(fileName, req, res) {
   });
 }
 
-/** @function uploadImage
- * A function to process an http POST request
- * containing an image to add to the gallery.
+/** @function servePage
+ * A function to serve an image file.
+ * @param {string} filename - the filename of the html page
+ * to serve.
+ * @param {http.incomingRequest} - the request object
+ * @param {http.serverResponse} - the response object
+ */
+function servePage(fileName, req, res) {
+  fs.readFile('details/' + decodeURIComponent(fileName), function(err, data){
+    if(err) {
+      console.error(err);
+      res.statusCode = 404;
+      res.statusMessage = "Resource not found";
+      res.end();
+      return;
+    }
+    res.setHeader('Content-Type', 'text/html');
+    res.end(data);
+  });
+}
+
+/** @function buildJSON
+ * A function to generate a JSON file
+ * containing metadata for an upload.
  * @param {http.incomingRequest} req - the request object
  * @param {http.serverResponse} res - the response object
  */
-function uploadImage(req, res) {
+function buildHTML(req, res) {
+  var filename = req.body.image.filename.slice(0, -4);
+  var filePath = path.join(__dirname, '/metadata/' + filename + '.json');
+  var details = JSON.parse(fs.readFileSync(filePath));
+  // var html =  `<!DOCTYPE html>`;
+  //     html += `<html>`;
+  //     html += `  <head>`;
+  //     html += `    <title>Gallery</title>`;
+  //     html += `  </head>`;
+  //     html += `  <body>`;
+  //     html += `    <img src="${details.image}" alt="${details.image}">`;
+  //     html += `    <h1>${details  .city + details.name}</h1>`;
+  //     html += `  </body>`;
+  //     html += `</html>`;
+  var html = template.render('details.html', {
+    city: details.city,
+    name: details.name,
+    image: details.image
+  })
+  filename = filename + '.html';
+  fs.writeFile('details/' + filename, html, function(err){
+    if(err) {
+      console.error(err);
+      res.statusCode = 500;
+      res.statusMessage = "Server Error";
+      res.end("Server Error");
+      return;
+    }
+  });
+}
+
+/** @function buildJSON
+ * A function to generate a JSON file
+ * containing metadata for an upload.
+ * @param {http.incomingRequest} req - the request object
+ * @param {http.serverResponse} res - the response object
+ */
+function buildJSON(req, res) {
+  var json = {
+    'city' : req.body.city,
+    'name' : req.body.name,
+    'image': req.body.image.filename
+  };
+  var filename = req.body.image.filename.slice(0, -4) + '.json';
+  json = JSON.stringify(json, null, ' ');
+  fs.writeFileSync('metadata/' + filename, json);
+}
+
+/** @function handleUpload
+ * A function to process an http POST request
+ * containing an image and text fields.
+ * @param {http.incomingRequest} req - the request object
+ * @param {http.serverResponse} res - the response object
+ */
+function handleUpload(req, res) {
   multipart(req, res, function(req, res) {
     // make sure an image was uploaded
     if(!req.body.image.filename) {
@@ -117,7 +194,7 @@ function uploadImage(req, res) {
       res.end("No file specified");
       return;
     }
-    fs.writeFile('images/' + req.body.image.filename, req.body.image.data, function(err){
+    fs.writeFile('images/' + req.body.image.filename, req.body.image.data, function(err) {
       if(err) {
         console.error(err);
         res.statusCode = 500;
@@ -127,6 +204,8 @@ function uploadImage(req, res) {
       }
       serveGallery(req, res);
     });
+    buildJSON(req, res);
+    buildHTML(req, res);
   });
 }
 
@@ -141,7 +220,7 @@ function handleRequest(req, res) {
   // a resource and a querystring separated by a ?
   var urlParts = url.parse(req.url);
 
-  if(urlParts.query){
+  if(urlParts.query) {
     var matches = /title=(.+)($|&)/.exec(urlParts.query);
     if(matches && matches[1]){
       config.title = decodeURIComponent(matches[1]);
@@ -155,7 +234,7 @@ function handleRequest(req, res) {
       if(req.method == 'GET') {
         serveGallery(req, res);
       } else if(req.method == 'POST') {
-        uploadImage(req, res);
+        handleUpload(req, res);
       }
       break;
     case '/gallery.css':
@@ -163,7 +242,12 @@ function handleRequest(req, res) {
       res.end(stylesheet);
       break;
     default:
-      serveImage(req.url, req, res);
+      var extension = req.url.substring(req.url.lastIndexOf('.') + 1);
+      if(extension == 'jpg') {
+        serveImage(req.url, req, res);
+      } else {
+          servePage(req.url, req, res);
+      }
   }
 }
 

@@ -6,14 +6,12 @@
   </head>
   <body>
     <h1><%= context.title %></h1>
-    <form method="GET" action="">
-      <input type="text" name="title">
-      <input type="submit" value="Change Gallery Title">
+    <form action="/" method="POST" enctype="multipart/form-data">
+    <input type="file" name="image">
+    <input type="text" name="city" placeholder="City">
+    <input type="text" name="name" placeholder="Name">
+    <input type="submit" value="Upload">
     </form>
     <%= context.imageTags %>
-    <form action="" method="POST" enctype="multipart/form-data">
-    <input type="file" name="image">
-    <input type="submit" value="Upload Image">
-    </form>
   </body>
 </html>
