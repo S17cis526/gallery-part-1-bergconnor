@@ -1,1 +1,4 @@
-A simple photo gallery web app to demonstrate the creation of a web server in Node.  The photos in the images folder were downloaded from [pixabay.com](pixabay.com) and are in the public domain.
+A simple catalog web app to display NFL team logos. Upon clicking on a logo the
+user will be taken to a details page with information about the selected team.
+The photos in the images folder were downloaded from
+[sportslogos.net](http://www.sportslogos.net/teams/list_by_league/7).

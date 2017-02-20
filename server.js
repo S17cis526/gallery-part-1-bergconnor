@@ -16,7 +16,8 @@ var port = 3000;
 
 /* load cached files */
 var config = JSON.parse(fs.readFileSync('config.json'));
-var stylesheet = fs.readFileSync('gallery.css');
+var gallery_style = fs.readFileSync('gallery.css');
+var details_style = fs.readFileSync('details.css');
 
 /* load tempaltes */
 template.loadDir('templates');
@@ -104,7 +105,7 @@ function serveImage(fileName, req, res) {
 }
 
 /** @function servePage
- * A function to serve an image file.
+ * A function to serve an html file.
  * @param {string} filename - the filename of the html page
  * to serve.
  * @param {http.incomingRequest} - the request object
@@ -124,9 +125,9 @@ function servePage(fileName, req, res) {
   });
 }
 
-/** @function buildJSON
- * A function to generate a JSON file
- * containing metadata for an upload.
+/** @function buildHTML
+ * A function to generate an html file
+ * containing to display an upload's metadata.
  * @param {http.incomingRequest} req - the request object
  * @param {http.serverResponse} res - the response object
  */
@@ -134,16 +135,6 @@ function buildHTML(req, res) {
   var filename = req.body.image.filename.slice(0, -4);
   var filePath = path.join(__dirname, '/metadata/' + filename + '.json');
   var details = JSON.parse(fs.readFileSync(filePath));
-  // var html =  `<!DOCTYPE html>`;
-  //     html += `<html>`;
-  //     html += `  <head>`;
-  //     html += `    <title>Gallery</title>`;
-  //     html += `  </head>`;
-  //     html += `  <body>`;
-  //     html += `    <img src="${details.image}" alt="${details.image}">`;
-  //     html += `    <h1>${details  .city + details.name}</h1>`;
-  //     html += `  </body>`;
-  //     html += `</html>`;
   var html = template.render('details.html', {
     city: details.city,
     name: details.name,
@@ -239,14 +230,18 @@ function handleRequest(req, res) {
       break;
     case '/gallery.css':
       res.setHeader('Content-Type', 'text/css');
-      res.end(stylesheet);
+      res.end(gallery_style);
+      break;
+    case '/details.css':
+      res.setHeader('Content-Type', 'text/css');
+      res.end(details_style);
       break;
     default:
       var extension = req.url.substring(req.url.lastIndexOf('.') + 1);
       if(extension == 'jpg') {
         serveImage(req.url, req, res);
       } else {
-          servePage(req.url, req, res);
+        servePage(req.url, req, res);
       }
   }
 }

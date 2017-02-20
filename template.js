@@ -33,5 +33,6 @@ function render(templateName, context) {
   return templates[templateName].replace(/<%=(.+)%>/g, function(match, js) {
     return eval("var context = " + JSON.stringify(context) + ";" + js);
   });
+  console.log(html);
   return html;
 }
