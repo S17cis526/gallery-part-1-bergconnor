@@ -8,6 +8,7 @@
 /* global variables */
 var multipart = require('./multipart');
 var template = require('./template');
+var metadata = require('./metadata');
 var http = require('http');
 var url = require('url');
 var fs = require('fs');
@@ -15,9 +16,8 @@ var path = require('path');
 var port = 3000;
 
 /* load cached files */
-var config = JSON.parse(fs.readFileSync('config.json'));
-var gallery_style = fs.readFileSync('gallery.css');
-var details_style = fs.readFileSync('details.css');
+var galleryStyle = fs.readFileSync('gallery.css');
+var detailsStyle = fs.readFileSync('details.css');
 
 /* load tempaltes */
 template.loadDir('templates');
@@ -44,8 +44,9 @@ function getImageNames(callback) {
  */
 function imageNamesToTags(fileNames) {
   return fileNames.map(function(fileName) {
-    var href = fileName.slice(0, -4) + '.html';
-    return `<a href="${href}"><img src="${fileName}" alt="${fileName}"></a>`;
+    var imagePath = 'images/' + fileName;
+    var pagePath = 'details/' + fileName.slice(0, -4) + '.html';
+    return `<a href="${pagePath}"><img src="${imagePath}" alt="${imagePath}"></a>`;
   });
 }
 
@@ -58,7 +59,6 @@ function imageNamesToTags(fileNames) {
  */
 function buildGallery(imageTags) {
   return template.render('gallery.html', {
-    title: config.title,
     imageTags: imageNamesToTags(imageTags).join('')
   });
 }
@@ -125,50 +125,6 @@ function servePage(fileName, req, res) {
   });
 }
 
-/** @function buildHTML
- * A function to generate an html file
- * containing to display an upload's metadata.
- * @param {http.incomingRequest} req - the request object
- * @param {http.serverResponse} res - the response object
- */
-function buildHTML(req, res) {
-  var filename = req.body.image.filename.slice(0, -4);
-  var filePath = path.join(__dirname, '/metadata/' + filename + '.json');
-  var details = JSON.parse(fs.readFileSync(filePath));
-  var html = template.render('details.html', {
-    city: details.city,
-    name: details.name,
-    image: details.image
-  })
-  filename = filename + '.html';
-  fs.writeFile('details/' + filename, html, function(err){
-    if(err) {
-      console.error(err);
-      res.statusCode = 500;
-      res.statusMessage = "Server Error";
-      res.end("Server Error");
-      return;
-    }
-  });
-}
-
-/** @function buildJSON
- * A function to generate a JSON file
- * containing metadata for an upload.
- * @param {http.incomingRequest} req - the request object
- * @param {http.serverResponse} res - the response object
- */
-function buildJSON(req, res) {
-  var json = {
-    'city' : req.body.city,
-    'name' : req.body.name,
-    'image': req.body.image.filename
-  };
-  var filename = req.body.image.filename.slice(0, -4) + '.json';
-  json = JSON.stringify(json, null, ' ');
-  fs.writeFileSync('metadata/' + filename, json);
-}
-
 /** @function handleUpload
  * A function to process an http POST request
  * containing an image and text fields.
@@ -195,8 +151,8 @@ function handleUpload(req, res) {
       }
       serveGallery(req, res);
     });
-    buildJSON(req, res);
-    buildHTML(req, res);
+    metadata.buildJSON(req, res);
+    metadata.buildHTML(req, res);
   });
 }
 
@@ -210,16 +166,10 @@ function handleRequest(req, res) {
   // at most, the url should have two parts -
   // a resource and a querystring separated by a ?
   var urlParts = url.parse(req.url);
+  var temp = urlParts.pathname.split('/');
+  console.log(temp[1]);
 
-  if(urlParts.query) {
-    var matches = /title=(.+)($|&)/.exec(urlParts.query);
-    if(matches && matches[1]){
-      config.title = decodeURIComponent(matches[1]);
-      fs.writeFile('config.json', JSON.stringify(config));
-    }
-  }
-
-  switch(urlParts.pathname) {
+  switch(temp[1]) {
     case '/':
     case '/gallery':
       if(req.method == 'GET') {
@@ -229,20 +179,30 @@ function handleRequest(req, res) {
       }
       break;
     case '/gallery.css':
+    case 'gallery.css':
       res.setHeader('Content-Type', 'text/css');
-      res.end(gallery_style);
+      res.end(galleryStyle);
       break;
     case '/details.css':
+    case 'details.css':
       res.setHeader('Content-Type', 'text/css');
-      res.end(details_style);
+      res.end(detailsStyle);
+      break;
+    case '/images':
+    case 'images':
+      serveImage(req.url, req, res);
+      break;
+    case '/details':
+    case 'details':
+      servePage(req.url, req, res);
       break;
     default:
-      var extension = req.url.substring(req.url.lastIndexOf('.') + 1);
-      if(extension == 'jpg') {
-        serveImage(req.url, req, res);
-      } else {
-        servePage(req.url, req, res);
-      }
+      // var extension = req.url.substring(req.url.lastIndexOf('.') + 1);
+      // if(extension == 'jpg') {
+      //   serveImage(req.url, req, res);
+      // } else {
+      //   servePage(req.url, req, res);
+      // }
   }
 }
 

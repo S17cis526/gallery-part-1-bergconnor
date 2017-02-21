@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= context.title %></title>
+    <title>NFL Teams Catalog</title>
     <link href="gallery.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <h1><%= context.title %></h1>
-    <form action="/" method="POST" enctype="multipart/form-data">
-    <input type="file" name="image">
-    <input type="text" name="city" placeholder="City">
-    <input type="text" name="name" placeholder="Name">
-    <input type="submit" value="Upload">
-    </form>
+    <h1>NFL Teams Catalog</h1>
     <%= context.imageTags %>
+    <form action="/" method="POST" enctype="multipart/form-data">
+      <input type="file" name="image">
+      <input type="text" name="city" placeholder="City">
+      <input type="text" name="name" placeholder="Name">
+      <textarea name="description" placeholder="Enter a description." cols="25" rows="5"></textarea>
+      <input type="submit" value="Upload">
+    </form>
   </body>
 </html>

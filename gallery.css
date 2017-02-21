@@ -1,3 +1,29 @@
 img {
   width: 250px;
 }
+
+form {
+  width:300px;
+  margin: 0 auto;
+}
+
+input {
+  float: left;
+}
+
+input[type="text"] {
+  white-space: nowrap;
+  width: inherit;
+}
+
+input[type="file"] {
+  width: inherit;
+}
+
+input[type="submit"] {
+  width: inherit;
+}
+
+textarea {
+  width: inherit;
+}
