@@ -15,7 +15,8 @@ var port = 3000;
 
 /* load cached files */
 var config = JSON.parse(fs.readFileSync('config.json'));
-var stylesheet = fs.readFileSync('gallery.css');
+var stylesheet = fs.readFileSync('public/gallery.css');
+var script = fs.readFileSync('public/gallery.js');
 
 /* load tempaltes */
 template.loadDir('templates');
@@ -161,6 +162,10 @@ function handleRequest(req, res) {
     case '/gallery.css':
       res.setHeader('Content-Type', 'text/css');
       res.end(stylesheet);
+      break;
+    case '/gallery.js':
+      res.setHeader('Content-Type', 'text/javascript');
+      res.end(script);
       break;
     default:
       serveImage(req.url, req, res);
