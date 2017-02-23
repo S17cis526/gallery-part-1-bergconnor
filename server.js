@@ -165,38 +165,33 @@ function handleUpload(req, res) {
 function handleRequest(req, res) {
   // at most, the url should have two parts -
   // a resource and a querystring separated by a ?
-  var urlParts = url.parse(req.url);
-  var temp = urlParts.pathname.split('/');
-  console.log(temp[1]);
+  var urlParts = url.parse(req.url).pathname.split('/');
 
-  switch(temp[1]) {
-    case '/':
-    case '/gallery':
+  switch(urlParts[1]) {
+    case '':
+    case 'gallery':
       if(req.method == 'GET') {
         serveGallery(req, res);
       } else if(req.method == 'POST') {
         handleUpload(req, res);
       }
       break;
-    case '/gallery.css':
     case 'gallery.css':
       res.setHeader('Content-Type', 'text/css');
       res.end(galleryStyle);
       break;
-    case '/details.css':
     case 'details.css':
       res.setHeader('Content-Type', 'text/css');
       res.end(detailsStyle);
       break;
-    case '/images':
     case 'images':
-      serveImage(req.url, req, res);
+      serveImage(urlParts[2], req, res);
       break;
-    case '/details':
     case 'details':
-      servePage(req.url, req, res);
+      servePage(urlParts[2], req, res);
       break;
     default:
+      break;
       // var extension = req.url.substring(req.url.lastIndexOf('.') + 1);
       // if(extension == 'jpg') {
       //   serveImage(req.url, req, res);

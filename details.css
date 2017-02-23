@@ -3,7 +3,12 @@ h1 {
 }
 
 img {
+  width: 350px;
   display: block;
   margin-right: auto;
   margin-left: auto;
+}
+
+p {
+  text-align: center;
 }

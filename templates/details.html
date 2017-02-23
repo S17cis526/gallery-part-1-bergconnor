@@ -5,8 +5,8 @@
     <link href="/details.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <h1><%= context.city %></h1>
-    <img src="<%= context.image %>">
-    <h1><%= context.name %></h1>
+    <a href="../gallery"><img src="<%= context.image %>"></a>
+    <h1><%= context.city %> <%= context.name %></h1>
+    <p><%= context.description %></p>
   </body>
 </html>

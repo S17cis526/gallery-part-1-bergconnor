@@ -17,9 +17,10 @@ var path = require('path');
  */
 function buildJSON(req, res) {
   var json = {
-    'city' : req.body.city,
-    'name' : req.body.name,
-    'image': req.body.image.filename
+    'city'        : req.body.city,
+    'name'        : req.body.name,
+    'description' : req.body.description,
+    'image'       : '../images/' + req.body.image.filename
   };
   var filename = req.body.image.filename.slice(0, -4) + '.json';
   json = JSON.stringify(json, null, ' ');
@@ -37,9 +38,10 @@ function buildHTML(req, res) {
   var filePath = path.join(__dirname, '/metadata/' + filename + '.json');
   var details = JSON.parse(fs.readFileSync(filePath));
   var html = template.render('details.html', {
-    city: details.city,
-    name: details.name,
-    image: details.image
+    city        : details.city,
+    name        : details.name,
+    description : details.description,
+    image       : details.image
   })
   filename = filename + '.html';
   fs.writeFile('details/' + filename, html, function(err){
