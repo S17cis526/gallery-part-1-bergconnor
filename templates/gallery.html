@@ -6,13 +6,17 @@
   </head>
   <body>
     <h1>NFL Teams Catalog</h1>
+    <div class="container">
+      <span>
+        <form action="/" method="POST" enctype="multipart/form-data">
+          <input type="file" name="image">
+          <input class="short" type="text" name="city" placeholder="City">
+          <input class="short" type="text" name="name" placeholder="Team Name">
+          <input class="long" type="text" name="description" placeholder="Description">
+          <input type="submit" value="Upload">
+        </form>
+      </span>
+    </div>
     <%= context.imageTags %>
-    <form action="/" method="POST" enctype="multipart/form-data">
-      <input type="file" name="image">
-      <input type="text" name="city" placeholder="City">
-      <input type="text" name="name" placeholder="Name">
-      <textarea name="description" placeholder="Enter a description." cols="25" rows="5"></textarea>
-      <input type="submit" value="Upload">
-    </form>
   </body>
 </html>

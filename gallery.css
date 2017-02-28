@@ -1,29 +1,37 @@
+body {
+  background-color: #232B2B;
+}
+
+.container {
+  overflow: hidden;
+  text-align: center;
+}
+
+span {
+  display: inline-block;
+  margin: 10px 10px 0 0;
+  padding: 10px 10px;
+  background-color: #E3AE57;
+  border: 2px solid #DC3D24;
+  border-radius: 5px;
+}
+
+h1 {
+  text-align: center;
+  color: #DC3D24;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+.short {
+  width: 150px;
+}
+
+.long {
+  width: 350px;
+}
+
 img {
   width: 250px;
-}
-
-form {
-  width:300px;
-  margin: 0 auto;
-}
-
-input {
-  float: left;
-}
-
-input[type="text"] {
-  white-space: nowrap;
-  width: inherit;
-}
-
-input[type="file"] {
-  width: inherit;
-}
-
-input[type="submit"] {
-  width: inherit;
-}
-
-textarea {
-  width: inherit;
+  border: 5px solid #DC3D24;
+  margin: 5px 5px 5px 5px;
 }
