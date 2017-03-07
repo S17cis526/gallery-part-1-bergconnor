@@ -163,14 +163,6 @@ function handleRequest(req, res) {
         uploadImage(req, res);
       }
       break;
-    // case '/gallery.css':
-    //   res.setHeader('Content-Type', 'text/css');
-    //   res.end(stylesheet);
-    //   break;
-    // case '/gallery.js':
-    //   res.setHeader('Content-Type', 'text/javascript');
-    //   res.end(script);
-    //   break;
     default:
       if(staticFiles.isCached('public' + req.url)) {
         staticFiles.serveFile('public' + req.url, req, res);
