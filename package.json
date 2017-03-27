@@ -1,0 +1,27 @@
+{
+  "name": "catalog",
+  "version": "2.0.0",
+  "description": "A Node webserver that provides the ability to view and add to a catalog of NFL teams.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/S17cis526/gallery-part-1-bergconnor.git"
+  },
+  "keywords": [
+    "catalog",
+    "NFL",
+    "football"
+  ],
+  "author": "Connor M. Berg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/S17cis526/gallery-part-1-bergconnor/issues"
+  },  
+  "homepage": "https://github.com/S17cis526/gallery-part-1-bergconnor#readme",
+  "dependencies": {
+    "sqlite3": "3.1.8"
+  }
+}
